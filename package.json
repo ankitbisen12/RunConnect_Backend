@@ -1,0 +1,21 @@
+{
+  "name": "runconnect",
+  "version": "1.0.0",
+  "description": "Backend of RunConnect app ",
+  "license": "ISC",
+  "author": "Ankit Bisen",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.1.5",
+    "morgan": "^1.10.1",
+    "ndb": "^1.1.5",
+    "nodemon": "^3.1.11"
+  }
+}
