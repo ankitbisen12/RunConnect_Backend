@@ -1,4 +1,3 @@
-import { Model } from "mongoose";
 import catchAsync from "../utils/catchAsync";
 
 export const getOne = catchAsync(async (Model) => {
@@ -23,6 +22,15 @@ export const getAll = catchAsync(async (Model) => {
         resultLength: docs.length,
         data: docs
     })
+});
+
+export const createOne = catchAsync(async (Model) => {
+    const newDoc = await Model.create(req.body);
+
+    res.status(201).json({
+        status: 'success',
+        data: newDoc
+    });
 });
 
 export const updateOne = catchAsync(async (Model) => {
