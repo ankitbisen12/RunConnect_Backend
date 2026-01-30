@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import validator from "validator";
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -34,8 +35,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["User", "Admin", "Organizer"],
-        default: "User",
+        enum: ["user", "admin", "organizer"],
+        default: "user",
     },
     active: {
         type: Boolean,
@@ -75,6 +76,16 @@ userSchema.pre("save", function (next) {
 //at the time of login, checking login password and saved password is matching or not.
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
+}
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+    if (this.passwordChangedAt) {
+        const chnagedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+
+        return JWTTimestamp < chnagedTimeStamp; //if JWT tooken issued time is less than password changed i.e password changed after token is issued.
+    }
+
+    return false; //password not changed
 }
 
 const User = mongoose.model("User", userSchema);

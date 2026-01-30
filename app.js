@@ -15,6 +15,12 @@ app.use(express.json());
 //Routers
 app.use('/api/v1/events', eventRouter);
 
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  console.log(req.headers);
+  next();
+});
+
 // app.all('*', (req, res, next) => {
 //     next(new Error(`Can't find url on this server!`));
 // });
