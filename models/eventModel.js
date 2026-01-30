@@ -62,11 +62,19 @@ const eventSchema = new mongoose.Schema(
       select: false,
     },
   },
-  {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-  },
 );
+
+eventSchema.virtual("id").get(function () {
+  return this._id;
+});
+
+eventSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  },
+});
 
 const Event = mongoose.model("Event", eventSchema);
 export default Event;

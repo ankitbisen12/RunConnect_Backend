@@ -1,6 +1,6 @@
-import catchAsync from "../utils/catchAsync";
+import catchAsync from "../utils/catchAsync.js";
 
-export const getOne = catchAsync(async (Model) => {
+export const getOne = Model => catchAsync(async (req, res, next) => {
     const id = req?.params?.id;
     const doc = await Model.findById(id);
 
@@ -8,23 +8,23 @@ export const getOne = catchAsync(async (Model) => {
         return next(new Error('No document found with that ID'));
     }
 
-    res.json({
+    res.status(200).json({
         status: 'success',
         data: doc
     });
 });
 
-export const getAll = catchAsync(async (Model) => {
+export const getAll = Model => catchAsync(async (req, res, next) => {
     const docs = await Model.find();
 
-    res.json({
+    res.status(200).json({
         status: 'success',
         resultLength: docs.length,
         data: docs
     })
 });
 
-export const createOne = catchAsync(async (Model) => {
+export const createOne = Model => catchAsync(async (req, res, next) => {
     const newDoc = await Model.create(req.body);
 
     res.status(201).json({
@@ -33,23 +33,23 @@ export const createOne = catchAsync(async (Model) => {
     });
 });
 
-export const updateOne = catchAsync(async (Model) => {
+export const updateOne = Model => catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true
     });
 
     if (!doc) {
-        return next(new Error('No document found with that ID', 404));
+        return next(new Error('No document found with that ID'));
     }
 
-    return res.json({
+    res.status(200).json({
         status: 'success',
         data: doc
     });
 });
 
-export const deleteOne = catchAsync(async (Model) => {
+export const deleteOne = Model => catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
 
     if (!doc) {

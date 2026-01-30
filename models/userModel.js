@@ -65,10 +65,11 @@ userSchema.pre("save", function (next) {
     next();
 });
 
-userSchema.pre(/^find/, function () {
-    this.find({ active: { $ne: false } });
-    next();
-});
+// userSchema.pre(/^find/, function () {
+//     this.find({ active: { $ne: false } });
+//     next();
+// });
+
 
 //Instance method.
 //at the time of login, checking login password and saved password is matching or not.
