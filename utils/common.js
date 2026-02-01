@@ -12,3 +12,7 @@ export const signToken = id => {
     });
 };
 
+export const createHashData = (data)=>{
+    return crypto.createHash('sha256').update(data).digest('hex');
+};
+

@@ -1,6 +1,6 @@
 import express from 'express';
 import { getAllUsers, getUser, updateProfile, deleteProfile } from '../controllers/userController.js';
-import { signUp, login } from '../controllers/authController.js';
+import { signUp, login,forgotPassword , resetPassword } from '../controllers/authController.js';
 
 const router = express.Router();
 
@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.post('/signup', signUp);
 router.post('/login', login);
+router.post('/forgot-password',forgotPassword);
+router.post('/reset-password/:token', resetPassword);
 
 //TODO: Protect all routes for logged in users only
 router.patch('/update-profile', updateProfile);
