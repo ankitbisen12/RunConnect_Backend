@@ -4,6 +4,8 @@ import eventRouter from './routes/eventRoutes.js';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
 
 const app = express();
 
@@ -21,6 +23,19 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 
+
+//Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+//Data sanitization against XSS
+app.use(xss());
+
+//Prevent Parameter Pollution
+app.use(hpp(
+  // {
+  //   whitelist: ['duration']
+  // }
+));
 
 //Routers
 app.use('/api/v1/events', eventRouter);
