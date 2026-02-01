@@ -1,3 +1,13 @@
+import rateLimit from "express-rate-limit";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+
+export const authLimiter = rateLimit({
+  max:5,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, please try again in an hour!'
+});
+
 export const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
     Object.keys(obj).forEach(el => {
