@@ -12,7 +12,15 @@ export const signToken = id => {
     });
 };
 
-export const createHashData = (data)=>{
+export const createHashData = (data) => {
     return crypto.createHash('sha256').update(data).digest('hex');
 };
 
+export const createSendToken = (user, statusCode, res) => {
+    const token = signToken(user.id);
+
+    res.status(statusCode).json({
+        status: 'success',
+        token,
+    });
+};

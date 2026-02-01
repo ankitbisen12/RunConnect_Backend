@@ -1,7 +1,7 @@
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import jwt from 'jsonwebtoken';
-import { createHashData, signToken } from '../utils/common.js';
+import { createHashData, createSendToken, signToken } from '../utils/common.js';
 import { promisify } from 'util';
 
 export const signUp = catchAsync(async (req, res, next) => {
@@ -13,14 +13,7 @@ export const signUp = catchAsync(async (req, res, next) => {
         passwordConfirm: req.body.passwordConfirm
     });
 
-    //TODO: fixed it with token functionality
-    const token = signToken(newUser._id);
-
-    res.status(201).json({
-        status: 'success',
-        token,
-        data: newUser
-    });
+    createSendToken(newUser, 201, res);
 });
 
 
@@ -37,14 +30,7 @@ export const login = catchAsync(async (req, res, next) => {
         return next(new Error('Incorrect email or password'));
     };
 
-    const token = signToken(user._id);
-
-    //if everything  is ok send the response to frontend.
-    res.status(201).json({
-        status: 'success',
-        token,
-        // data: user, //don't expose entire info of user.
-    });
+    createSendToken(user, 200, res);
 });
 
 export const protect = catchAsync(async (req, res, next) => {
@@ -143,23 +129,14 @@ export const resetPassword = catchAsync(async (req, res, next) => {
     };
 
     //update the password 
-
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
 
-
     //send JWT.
-    const token = signToken(user._id);
-
-    res.status(201).json({
-        status: 'success',
-        token,
-    });
-
-
+    createSendToken(user, 200, res);
 });
 
 export const updatePassword = catchAsync(async (req, res, next) => {
@@ -176,11 +153,6 @@ export const updatePassword = catchAsync(async (req, res, next) => {
     await user.save();
 
     //logged in with new token
-    const token = signToken(user._id);
-
-    res.status(201).json({
-        status: 'success',
-        token,
-    });
+    createSendToken(user, 200, res);
 });
 
