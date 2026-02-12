@@ -61,6 +61,10 @@ const eventSchema = new mongoose.Schema(
       default: Date.now(),
       select: false,
     },
+    bookedSpots: {
+      type: Number,  //TODO: Each time event is booked decerease count by 1.
+      required: true
+    }
   },
 );
 

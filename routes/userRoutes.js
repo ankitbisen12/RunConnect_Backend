@@ -1,7 +1,7 @@
 import express from 'express';
 import { getAllUsers, getUser, updateProfile, deleteProfile } from '../controllers/userController.js';
 import { signUp, login, forgotPassword, resetPassword, updatePassword, protect } from '../controllers/authController.js';
-import { restrictTo } from '../controllers/authContoller.js';
+import { restrictTo } from '../controllers/authController.js';
 import { authLimiter } from '../utils/common.js';
 
 const router = express.Router();

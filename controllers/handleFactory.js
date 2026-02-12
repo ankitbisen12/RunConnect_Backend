@@ -1,11 +1,12 @@
 import catchAsync from "../utils/catchAsync.js";
+import AppError from "../utils/appError.js";
 
 export const getOne = Model => catchAsync(async (req, res, next) => {
     const id = req?.params?.id;
     const doc = await Model.findById(id);
 
     if (!doc) {
-        return next(new Error('No document found with that ID'));
+        return next(new AppError('No document found with that ID', 404));
     }
 
     res.status(200).json({
@@ -15,12 +16,16 @@ export const getOne = Model => catchAsync(async (req, res, next) => {
 });
 
 export const getAll = Model => catchAsync(async (req, res, next) => {
-    const docs = await Model.find();
+    const doc = await Model.find();
+
+    if (!doc) {
+        return next(new AppError('No document find with this ID', 404));
+    }
 
     res.status(200).json({
         status: 'success',
         resultLength: docs.length,
-        data: docs
+        data: doc
     })
 });
 
@@ -40,7 +45,7 @@ export const updateOne = Model => catchAsync(async (req, res, next) => {
     });
 
     if (!doc) {
-        return next(new Error('No document found with that ID'));
+        return next(new AppError('No document found with that ID', 404));
     }
 
     res.status(200).json({
@@ -53,7 +58,7 @@ export const deleteOne = Model => catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
 
     if (!doc) {
-        return next(new Error('No document found with that ID', 404));
+        return next(new AppError('No document found with that ID', 404));
     }
 
     res.status(204).json({

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import validator from "validator";
 import crypto from "crypto";
-import { createHashData } from "../utils/common";
+import { createHashData } from "../utils/common.js";
 
 const userSchema = new mongoose.Schema({
     name: {

@@ -1,6 +1,6 @@
 import express from 'express';
-import { deleteEvent, getAllEvents, getEvent, updateEvent, createEvent } from '../controllers/eventContoller.js';
-import { protect, restrictTo } from '../controllers/authContoller.js';
+import { deleteEvent, getAllEvents, getEvent, updateEvent, createEvent } from '../controllers/eventController.js';
+import { protect, restrictTo } from '../controllers/authController.js';
 
 const router = express.Router();
 

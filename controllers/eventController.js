@@ -1,6 +1,6 @@
 import Event from '../models/eventModel.js';
 import catchAsync from '../utils/catchAsync.js';
-import { getAll, getOne, updateOne, deleteOne, createOne } from '../controllers/handleFactory.js';
+import { getAll, getOne, updateOne, deleteOne, createOne } from './handleFactory.js';
 
 //controllers 
 
