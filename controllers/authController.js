@@ -1,33 +1,35 @@
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import jwt from 'jsonwebtoken';
-import { createHashData, createSendToken, signToken } from '../utils/common.js';
+import { createHashData, createSendToken } from '../utils/common.js';
 import { promisify } from 'util';
+import AppError from '../utils/appError.js';
 
 export const signUp = catchAsync(async (req, res, next) => {
+    console.log("Inside Signup controller", req.body);
     //easily create user can specify role as admin. so we are passing only required fields.
     const newUser = await User.create({
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        passwordConfirm: req.body.passwordConfirm
+        passwordConfirm: req.body.confirmPassword
     });
 
+    console.log("User inside signup controller", newUser);
     createSendToken(newUser, 201, res);
 });
 
-
 export const login = catchAsync(async (req, res, next) => {
-    const { email, password } = req.body; ``
+    const { email, password } = req.body;
 
     if (!email || !password) {
-        return next(new Error('Please provide email and password'));
+        return next(new AppError('Please provide email and password', 400));
     }
 
     const user = await User.findOne({ email }).select('+password');
 
-    if (!user || !(await user.correctPasword(password, user.password))) {
-        return next(new Error('Incorrect email or password'));
+    if (!user || !(await user.correctPassword(password, user.password))) {
+        return next(new AppError('Incorrect email or password', 401));
     };
 
     createSendToken(user, 200, res);
@@ -36,30 +38,41 @@ export const login = catchAsync(async (req, res, next) => {
 export const protect = catchAsync(async (req, res, next) => {
     //1) Getting token and check if it's there
     let token;
+    console.log("Reached protect");
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        console.log("Reached authorization");
         token = req.headers.authorization.split(' ')[1];
+        console.log("token haeder", token);
     }
+    else if (req.cookies.jwt) {
+        token = req.cookies.jwt;
+    }
+    
     if (!token) {
-        return next(new Error('You are not logged in! Please log in to get access.'));
+        return next(new AppError('You are not logged in! Please log in to get access.', 401));
     }
-
 
     //2) Verification  token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    console.log("decoded", decoded);
 
     //3) Check if user still exists
     const currentUser = await User.findById(decoded.id);
+    console.log("currentUser", currentUser);
+
     if (!currentUser) {
         return next(new Error('The user belonging to this token does no longer exist.'));
     }
 
     //4)check if user chnaged passwrod after the token was issued. //super important for security.
-    if (currentUser.passwordChangedAt(decoded.iat)) {
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
         return next(new Error('User recently changed password! Please log in again.'));
     }
 
     //GRANT ACCESS TO PROTECTED ROUTE
+    console.log("req.user", req.user);
     req.user = currentUser;
+    console.log("req.user", req.user);
     next();
 });
 

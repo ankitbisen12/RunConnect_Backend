@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
         minLength: [10, "Password must be at least 8 characters long"],
         select: false,
     },
-    confirmPassword: {
+    passwordConfirm: {
         type: String,
         required: [true, "Please confirm your password"],
         //This only works on CREATE and SAVE!!!
@@ -50,30 +50,43 @@ const userSchema = new mongoose.Schema({
     passwordResetExpires: Date,
 });
 
-//Document middleware.
-userSchema.pre("save", async function (next) {
-    //if Password is not modified then skip hashing.
-    if (!this.isModified("password")) return next();
+
+// Document middleware.
+userSchema.pre('save', async function (next) {
+
+    if (!this.isModified('password')) return next();
 
     //Hash the password with cost of 12
     this.password = await bcrypt.hash(this.password, 12);
+    console.log("this.password", this.password);
 
-    //delete confirmPassweord field. Need just for verification.
-    this.confirmPassword = undefined;
+    //delete passwordConfirm field// need just for verification
+    this.passwordConfirm = undefined;
     next();
 });
 
-userSchema.pre("save", function (next) {
+userSchema.pre('save', function (next) {
     if (!this.isModified("password") || this.isNew) return next();
 
     this.passwordChangedAt = Date.now() - 1000; //to capture password change time.
     next();
 });
 
-userSchema.pre(/^find/, function () {
-    this.find({ active: { $ne: false } });
-    next();
-});
+// userSchema.pre(/^find/, function (next) {
+//     this.find({ active: { $ne: false } });
+//     next();
+// });
+
+// userSchema.pre('save', function (next) {
+//     this.start = Date.now();
+//     next();
+// });
+
+// // Keep your post-save hook
+// userSchema.post('save', function (docs, next) {
+//     console.log(`Save operation took ${Date.now() - this.start} milliseconds`);
+//     next();
+// });
 
 //Instance method.
 //at the time of login, checking login password and saved password is matching or not.
@@ -83,9 +96,9 @@ userSchema.methods.correctPassword = async function (candidatePassword, userPass
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     if (this.passwordChangedAt) {
-        const chnagedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+        const changedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
 
-        return JWTTimestamp < chnagedTimeStamp; //if JWT tooken issued time is less than password changed i.e password changed after token is issued.
+        return JWTTimestamp < changedTimeStamp; //if JWT tooken issued time is less than password changed i.e password changed after token is issued.
     }
 
     return false; //password not changed
@@ -101,6 +114,6 @@ userSchema.methods.createPasswordResetToken = function () {
     return resetToken;
 };
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 export default User;

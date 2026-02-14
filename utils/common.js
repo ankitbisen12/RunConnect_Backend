@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
 export const authLimiter = rateLimit({
-  max:5,
-  windowMs: 60 * 60 * 1000,
-  message: 'Too many requests from this IP, please try again in an hour!'
+    max: 5,
+    windowMs: 60 * 60 * 1000,
+    message: 'Too many requests from this IP, please try again in an hour!'
 });
 
 export const filterObj = (obj, ...allowedFields) => {
@@ -28,6 +28,7 @@ export const createHashData = (data) => {
 
 export const createSendToken = (user, statusCode, res) => {
     const token = signToken(user.id);
+    console.log("token", token);
 
     const cookieOptions = {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
@@ -44,3 +45,4 @@ export const createSendToken = (user, statusCode, res) => {
         data: user
     });
 };
+

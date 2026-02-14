@@ -7,6 +7,13 @@ import { filterObj } from '../utils/common.js';
 export const getUser = getOne(User);
 export const getAllUsers = getAll(User);
 
+export const getMe = catchAsync(async (req, res, next) => {
+    console.log("req.user.id",req?.user);
+    console.log("req.params.id",req.params.id);
+    req.params.id = req.user.id;
+    next();
+});
+
 export const deleteProfile = catchAsync(async (req, res, next) => {
     const userId = req.user?.id;
 

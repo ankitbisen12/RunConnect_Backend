@@ -1,8 +1,10 @@
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
+import APIFeatures from "../utils/apiFeatures.js";
 
 export const getOne = Model => catchAsync(async (req, res, next) => {
     const id = req?.params?.id;
+    console.log(id);
     const doc = await Model.findById(id);
 
     if (!doc) {
@@ -16,16 +18,18 @@ export const getOne = Model => catchAsync(async (req, res, next) => {
 });
 
 export const getAll = Model => catchAsync(async (req, res, next) => {
-    const doc = await Model.find();
+    console.log("req.query inside getAll", req.query);
+    const features = new APIFeatures(Model.find(), req.query).filter().sort().limitFields().paginate();
+    const docs = await features.query;
 
-    if (!doc) {
+    if (!docs) {
         return next(new AppError('No document find with this ID', 404));
     }
 
     res.status(200).json({
         status: 'success',
         resultLength: docs.length,
-        data: doc
+        data: docs
     })
 });
 
